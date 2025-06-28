@@ -65,45 +65,57 @@ if (isset($_POST['loginbtn'])) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Freelance Login</title>
-    <style>
-        body { font-family: sans-serif; background: #f5f5f5; }
-        .container { width: 320px; margin: auto; padding-top: 60px; }
-        form { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        input, select, button {
-            display: block;
-            margin: 10px 0;
-            width: 100%;
-            padding: 8px;
-        }
-        .toggle { text-align: center; margin-top: 10px; cursor: pointer; color: blue; }
-        .error { color: red; font-size: 14px; margin: 5px 0; }
-        h2 { text-align: center; }
-    </style>
+    <link rel="stylesheet" href="styles/login_style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
 
-<div class="container">
+<div class="login-container">
     <!-- Login Form -->
-    <form method="POST">
-        <h2>Login</h2>
+    <h2>LOGIN</h2>
+    <form method="POST", class="login-form">
+        <div class="input-group">
+                <input type="email" name="login-email" placeholder="Email" required>
+        </div>
+        <div class="input-group password-group">
+            <input type="password" name="login-pass" placeholder="Password" required>
+            <span class="password-toggle" onclick="togglePasswordVisibility()">
+                <i class="fas fa-eye-slash" id="password-icon"></i>
+            </span>
+        </div>
+        <button name="loginbtn" type="submit" class="login-button">Log In</button>
         <?php if (!empty($errors)) foreach ($errors as $e) echo "<p class='error'>$e</p>"; ?>
-        <input type="email" name="login-email" placeholder="Email" required>
-        <input type="password" name="login-pass" placeholder="Password" required>
-        <button name="loginbtn" type="submit">Login</button>
     </form>
 
+    <div class="links">
+            <p>Don't have an account? <a href="#">Sign Up</a></p>
+            <p><a href="#">Forgot Password?</a></p>
+    </div>
+
     <!-- Toggle Link -->
-    <div class="toggle" onclick="document.getElementById('signup').style.display='block'">Create Account</div>
+    <div class="links" onclick="document.getElementById('signup').style.display='block'">Create Account</div>
 
     <!-- Signup Form -->
     <form id="signup" method="POST" style="display:none;">
         <h2>Sign Up</h2>
         <?php if (!empty($error)) foreach ($error as $e) echo "<p class='error'>$e</p>"; ?>
-        <input type="text" name="Fname" placeholder="Full Name" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="pass" placeholder="Password" required>
-        <input type="password" name="Cpass" placeholder="Confirm Password" required>
+
+        <div class="input-group">
+            <input type="text" name="Fname" placeholder="Full Name" required>
+        </div>
+
+        <div class="input-group">
+            <input type="email" name="email" placeholder="Email" required>
+        </div>
+
+        <div class="input-group password-group">
+            <input type="password" name="pass" placeholder="Password" required>
+            <input type="password" name="Cpass" placeholder="Confirm Password" required>
+            </span>
+        </div>
+        
         <select name="user" required>
             <option value="freelancer">Freelancer</option>
             <option value="client">Client</option>
