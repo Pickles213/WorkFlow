@@ -1,0 +1,120 @@
+<?php
+require 'config.php';
+session_start();
+
+//  Check user is logged in and is a client
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'client') {
+    header('Location: login.php');
+    exit();
+}
+
+$client_id = $_SESSION['user_id'];
+$filter_status = $_GET['status'] ?? '';
+
+//  Get all active (not archived) tasks assigned by this client
+$sql = "SELECT tasks.*, users.fullname AS freelancer_name
+        FROM tasks
+        JOIN users ON tasks.assigned_to = users.id
+        WHERE tasks.assigned_by = $client_id AND tasks.is_archived = 0";
+
+if ($filter_status) {
+    $status_safe = mysqli_real_escape_string($conn, $filter_status);
+    $sql .= " AND tasks.status = '$status_safe'";
+}
+
+$tasks = mysqli_query($conn, $sql);
+
+//  Task counters
+$status_counts = [];
+$status_query = mysqli_query($conn, "SELECT status, COUNT(*) as count FROM tasks WHERE assigned_by = $client_id AND is_archived = 0 GROUP BY status");
+while ($row = mysqli_fetch_assoc($status_query)) {
+    $status_counts[$row['status']] = $row['count'];
+}
+
+//  Priority color function
+function priorityColor($priority) {
+    return match ($priority) {
+        'high' => 'red',
+        'medium' => 'orange',
+        'low' => 'green',
+        default => 'gray'
+    };
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Client Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f5f5f5; }
+        .task { border-left: 5px solid gray; background: white; padding: 15px; margin: 10px 0; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .button { padding: 6px 12px; margin: 5px 5px 5px 0; text-decoration: none; border-radius: 4px; font-size: 14px; }
+        .edit { background-color: orange; color: white; }
+        .delete { background-color: red; color: white; }
+        .create { background-color: green; color: white; }
+        .msg { color: green; font-weight: bold; margin-bottom: 10px; }
+        select, label { font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<h2>Welcome, <?= htmlspecialchars($_SESSION['user_name']) ?> (Client)</h2>
+
+<!--  Success messages -->
+<?php if (isset($_GET['msg'])): ?>
+    <?php if ($_GET['msg'] === 'archived'): ?>
+        <p class="msg"> Task moved to trash.</p>
+    <?php elseif ($_GET['msg'] === 'updated'): ?>
+        <p class="msg"> Task updated successfully.</p>
+    <?php elseif ($_GET['msg'] === 'created'): ?>
+        <p class="msg"> Task created successfully.</p>
+    <?php endif; ?>
+<?php endif; ?>
+
+<!--  Task Summary -->
+<p><strong>Task Summary:</strong></p>
+<ul>
+    <li>Pending: <?= $status_counts['pending'] ?? 0 ?></li>
+    <li>Accepted: <?= $status_counts['accepted'] ?? 0 ?></li>
+    <li>In Progress: <?= $status_counts['in_progress'] ?? 0 ?></li>
+    <li>Completed: <?= $status_counts['completed'] ?? 0 ?></li>
+    <li>Declined: <?= $status_counts['declined'] ?? 0 ?></li>
+</ul>
+
+<!--  Controls -->
+<a class="button create" href="create_task.php">+ Create New Task</a>
+<a class="button" href="trash.php">🗑️ View Trash</a>
+
+<!--  Filter by status -->
+<form method="GET" style="margin-top: 10px;">
+    <label for="status">Filter by Status:</label>
+    <select name="status" onchange="this.form.submit()">
+        <option value="">All</option>
+        <?php foreach (['pending', 'accepted', 'in_progress', 'completed', 'declined'] as $s): ?>
+            <option value="<?= $s ?>" <?= $filter_status === $s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
+        <?php endforeach; ?>
+    </select>
+</form>
+
+<!--  Task list -->
+<?php if (mysqli_num_rows($tasks) === 0): ?>
+    <p>No tasks found.</p>
+<?php else: ?>
+    <?php while ($task = mysqli_fetch_assoc($tasks)): ?>
+        <div class="task" style="border-color: <?= priorityColor($task['priority']) ?>;">
+            <h3><?= htmlspecialchars($task['title']) ?></h3>
+            <p><strong>Freelancer:</strong> <?= htmlspecialchars($task['freelancer_name']) ?></p>
+            <p><strong>Status:</strong> <?= htmlspecialchars($task['status']) ?></p>
+            <p><strong>Due:</strong> <?= htmlspecialchars($task['due_date']) ?></p>
+            <p><strong>Priority:</strong> <?= htmlspecialchars($task['priority']) ?></p>
+
+            <!--  Actions -->
+            <a class="button edit" href="edit_task.php?id=<?= $task['id'] ?>">Edit</a>
+            <a class="button delete" href="archive_task.php?id=<?= $task['id'] ?>" onclick="return confirm('Are you sure you want to move this task to Trash?')">Trash</a>
+        </div>
+    <?php endwhile; ?>
+<?php endif; ?>
+
+</body>
+</html>
