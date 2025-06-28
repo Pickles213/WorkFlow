@@ -1,0 +1,108 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #4CAF50; /* Green background from image */
+    background: linear-gradient(to bottom, #C0EBA6, #347928); /* Gradient for a smoother look */
+}
+
+.login-container {
+    background-color: #2F4F4F; /* Dark slate gray, similar to the card background */
+    padding: 40px;
+    border-radius: 20px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    text-align: center;
+    width: 350px; /* Adjust as needed */
+}
+
+h2 {
+    color: #f0f0f0; /* Light gray for the LOGIN text */
+    margin-bottom: 30px;
+    font-size: 1.8em;
+    letter-spacing: 2px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    position: relative; /* For positioning the eye icon */
+}
+
+.input-group input {
+    width: calc(100% - 20px); /* Adjust for padding */
+    padding: 12px 10px;
+    border: none;
+    border-radius: 8px; /* Rounded input fields */
+    background-color: #f0f0f0; /* Light background for input */
+    color: #333;
+    font-size: 0.8em;
+    outline: none; /* Remove outline on focus */
+}
+
+.input-group input::placeholder {
+    color: #888;
+}
+
+.password-group {
+    display: flex; /* To align input and icon */
+    align-items: center;
+}
+
+.password-group input {
+    flex-grow: 1; /* Allow input to take available space */
+    padding-right: 40px; /* Make space for the icon */
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px; /* Adjust positioning */
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666; /* Color of the eye icon */
+}
+
+.password-toggle i {
+    font-size: 1.2em;
+}
+
+.login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #f0f0f0; /* Light background for the button */
+    color: #333; /* Dark text for the button */
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.login-button:hover {
+    background-color: #ddd; /* Slightly darker on hover */
+}
+
+.links {
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #bbb; /* Lighter text for links */
+}
+
+.links p {
+    margin: 8px 0;
+}
+
+.links a {
+    color: #fff; /* White for the clickable links */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.links a:hover {
+    color: #ffd700; /* Gold color on hover for links */
+    text-decoration: underline;
+}
